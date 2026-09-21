@@ -1,0 +1,49 @@
+# Compiled output
+*.class
+bin/
+out/
+build/
+target/
+WebContent/WEB-INF/classes/
+src/main/webapp/WEB-INF/classes/
+
+# Eclipse files
+.project
+.classpath
+.settings/
+.metadata/
+.recommenders/
+.externalToolBuilders/
+.apt_generated/
+.factorypath
+.springBeans
+Servers/
+tmp*/
+*.launch
+
+# IntelliJ files
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Logs
+logs/
+*.log
+work/
+temp/
+
+# Secrets
+db.properties
+.env
+*.env
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Other IDEs
+.vscode/
+*.swp
+*~
