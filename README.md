@@ -7,7 +7,7 @@ Team members: Julia Husainzada, Janet Chiem, Jay Timbol
 to get the database to connect (currently), copy index.jsp into your tomcat ROOT folder in a new directory called StudySpotter. in this, for experiments, u can then add ur passwords and stuff in the tomcat index.jsp. do not commit this to github
 use the sql file to add the studyspotterdb into workbench & fix any discrepancies in the files...
 
-
+![img.png](img.png)
 
 
 
