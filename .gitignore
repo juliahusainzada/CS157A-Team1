@@ -26,7 +26,6 @@ tmp*/
 *.iml
 *.iws
 *.ipr
-atlassian-ide-plugin.xml
 
 # Logs
 logs/
