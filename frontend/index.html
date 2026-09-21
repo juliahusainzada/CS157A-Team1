@@ -5,6 +5,79 @@
     <title>StudySpotter</title>
 </head>
 <body>
-
+	<header>
+		<h1>StudySpotter</h1>
+		<nav>
+			<button>Log In</button>
+			<button>Sign Up</button>
+		</nav>
+	</header>
+	
+	<main>
+		<!-- search & filters section -->
+		<section>
+			<h2>Find a Study Spot</h2>
+			<form>
+				<label>Location: <input type="text" placeholder="City or ZIP"></label>
+ 
+				<label>Radius:
+					<select>
+						<option>5 miles</option>
+						<option>10 miles</option>
+						<option>15 miles</option>
+					</select>
+				</label>
+ 
+				<label>Noise Level:
+					<select>
+						<option>Any</option>
+						<option>Quiet</option>
+						<option>Moderate</option>
+						<option>Loud</option>
+					</select>
+				</label>
+ 
+				<label>Outlets:
+					<select>
+						<option>Any</option>
+						<option>Few</option>
+						<option>Plenty</option>
+					</select>
+				</label>
+ 
+				<label>Wi-Fi:
+					<select>
+						<option>Any</option>
+						<option>Basic</option>
+						<option>Strong</option>
+					</select>
+				</label>
+ 
+				<label>Sort by:
+					<select>
+						<option>Highest rated</option>
+						<option>Nearest</option>
+					</select>
+				</label>
+ 
+				<button type="button">Search</button>
+			</form>
+		</section>
+		
+		<!-- results section (hard coded right now) -->
+		<section>
+			<h2>Nearby Spots</h2>
+ 
+			<article>
+				<h3>Sample Spot</h3>
+				<p>Category</p>
+				<p>Rating: 4.5 / 5</p>
+				<p>Distance: 0.8 mi</p>
+				<p>Quiet</p>
+				<p>20+ Outlets</p>
+			</article>
+		</section>
+	</main>
+	
 </body>
 </html>
