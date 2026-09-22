@@ -1,112 +1,113 @@
-<%@ page import="java.sql.*"%>
+<%@ page import="java.util.List" %>
+<%@ page import="studyspotter.Place" %>
+<%@ page import="studyspotter.PlaceDAO" %>
+
 <html>
 <head>
-  <title>StudySpotter</title>
-  <nav>
-  		<button>Log In</button>
-  		<button>Sign Up</button>
-  </nav>
+	<title>StudySpotter</title>
+	<nav>
+		<button>Log In</button>
+		<button>Sign Up</button>
+	</nav>
 </head>
+
 <body>
-<h1>StudySpotter</h1>
-<section>
-			<h2>Find a Study Spot</h2>
-			<form>
-				<label>Location: <input type="text" placeholder="City or ZIP"></label>
 
-				<label>Radius:
-					<select>
-						<option>5 miles</option>
-						<option>10 miles</option>
-						<option>15 miles</option>
-					</select>
-				</label>
+	<h1>StudySpotter</h1>
 
-				<label>Noise Level:
-					<select>
-						<option>Any</option>
-						<option>Quiet</option>
-						<option>Moderate</option>
-						<option>Loud</option>
-					</select>
-				</label>
+	<section>
+		<h2>Find a Study Spot</h2>
 
-				<label>Outlets:
-					<select>
-						<option>Any</option>
-						<option>Few</option>
-						<option>Plenty</option>
-					</select>
-				</label>
+		<form>
+			<label>
+				Location:
+				<input type="text" placeholder="City or ZIP">
+			</label>
 
-				<label>Wi-Fi:
-					<select>
-						<option>Any</option>
-						<option>Basic</option>
-						<option>Strong</option>
-					</select>
-				</label>
+			<label>
+				Radius:
+				<select>
+					<option>5 miles</option>
+					<option>10 miles</option>
+					<option>15 miles</option>
+				</select>
+			</label>
 
-				<label>Sort by:
-					<select>
-						<option>Highest rated</option>
-						<option>Nearest</option>
-					</select>
-				</label>
+			<label>
+				Noise Level:
+				<select>
+					<option>Any</option>
+					<option>Quiet</option>
+					<option>Moderate</option>
+					<option>Loud</option>
+				</select>
+			</label>
 
-				<button type="button">Search</button>
-			</form>
-		</section>
+			<label>
+				Outlets:
+				<select>
+					<option>Any</option>
+					<option>Few</option>
+					<option>Plenty</option>
+				</select>
+			</label>
 
-		<!-- results section (hard coded right now) -->
-		<section>
-			<h2>Nearby Spots</h2>
+			<label>
+				Wi-Fi:
+				<select>
+					<option>Any</option>
+					<option>Basic</option>
+					<option>Strong</option>
+				</select>
+			</label>
+
+			<label>
+				Sort by:
+				<select>
+					<option>Highest rated</option>
+					<option>Nearest</option>
+				</select>
+			</label>
+
+			<button type="button">Search</button>
+		</form>
+	</section>
+
+	<!-- Results loaded dynamically from MySQL -->
+	<section>
+		<h2>Nearby Spots</h2>
+
+		<%
+			PlaceDAO placeDAO = new PlaceDAO();
+			List<Place> places = placeDAO.getAllPlacesByRating();
+
+			for (Place place : places) {
+		%>
 
 			<article>
-				<h3>Sample Spot</h3>
-				<p>Category</p>
-				<p>Rating: 4.5 / 5</p>
-				<p>Distance: 0.8 mi</p>
-				<p>Quiet</p>
-				<p>20+ Outlets</p>
+				<h3><%= place.getName() %></h3>
+
+				<p><%= place.getCategory() %></p>
+
+				<p>Rating: <%= place.getOverallRating() %> / 5</p>
+
+				<p>
+					<%= place.getAddress() %>,
+					<%= place.getCity() %>,
+					<%= place.getState() %>
+					<%= place.getZipCode() %>
+				</p>
+
+				<p>Noise: <%= place.getNoiseLevel() %></p>
+				<p>Outlets: <%= place.getOutletLevel() %></p>
+				<p>Wi-Fi: <%= place.getWifiLevel() %></p>
 			</article>
-		</section>
-	</main>
 
-<table border="1">
-  <tr>
-    <td>ID</td>
-    <td>EMAIL</td>
-    <td>DATE_CREATED</td>
-  </tr>
-    <%
-     String db = "studyspotter";
-        String user;
-          user = "root";
-        String password = "your_password_here";
-        try {
-            java.sql.Connection con;
-            Class.forName("com.mysql.jdbc.Driver");
+		<%
+			}
+		%>
 
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/studyspotter?autoReconnect=true&useSSL=false",user, password);
+	</section>
 
-            out.println(db + " database successfully opened.<br/><br/>");
-
-            out.println("Initial entries in table \"User\": <br/>");
-
-            Statement stmt = con.createStatement();
-
-            ResultSet rs = stmt.executeQuery("SELECT * FROM users");
-
-            while (rs.next()) {
-         out.println("<tr>" + "<td>" +  rs.getInt(1) + "</td>" + "<td>" +  rs.getString(2) + "</td>"+ "<td>" +    rs.getInt(3) + "</td>"+   "<td>" + rs.getDate(4) + "</td>"  + "</tr>");
-            }
-            rs.close();
-            stmt.close();
-            con.close();
-        } catch(SQLException e) {
-            out.println("SQLException caught: " + e.getMessage());
-        }
-    %>
 </body>
 </html>
