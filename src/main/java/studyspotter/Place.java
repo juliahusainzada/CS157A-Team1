@@ -1,3 +1,4 @@
+package studyspotter;
 public class Place {
 	private int placeId;
 	private String name;
