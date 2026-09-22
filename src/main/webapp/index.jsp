@@ -5,76 +5,68 @@
 <html>
 <head>
 	<title>StudySpotter</title>
-	<nav>
-		<button>Log In</button>
-		<button>Sign Up</button>
-	</nav>
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
 </head>
 
 <body>
+	<header>
+		<h1>
+			<span class="logo-script">Study</span>
+			<span class="logo-serif">Spotter</span>
+		</h1>
+		<nav>
+			<button>Log In</button>
+			<button>   Sign Up</button>
+		</nav>
+	</header>
 
-	<h1>StudySpotter</h1>
-
-	<section>
+	<section class='search-section'>
 		<h2>Find a Study Spot</h2>
 
-		<form>
+		<form class="search-form">
 			<label>
 				Location:
 				<input type="text" placeholder="City or ZIP">
 			</label>
 
-			<label>
-				Radius:
-				<select>
-					<option>5 miles</option>
-					<option>10 miles</option>
-					<option>15 miles</option>
-				</select>
-			</label>
-
-			<label>
-				Noise Level:
-				<select>
-					<option>Any</option>
-					<option>Quiet</option>
-					<option>Moderate</option>
-					<option>Loud</option>
-				</select>
-			</label>
-
-			<label>
-				Outlets:
-				<select>
-					<option>Any</option>
-					<option>Few</option>
-					<option>Plenty</option>
-				</select>
-			</label>
-
-			<label>
-				Wi-Fi:
-				<select>
-					<option>Any</option>
-					<option>Basic</option>
-					<option>Strong</option>
-				</select>
-			</label>
-
-			<label>
-				Sort by:
-				<select>
-					<option>Highest rated</option>
-					<option>Nearest</option>
-				</select>
-			</label>
-
-			<button type="button">Search</button>
+			<button type="button" class="btn-search">Search</button>
 		</form>
+
+		<div class="search-filters">
+			<select>
+				<option>Radius: 5 miles</option>
+				<option>Radius: 10 miles</option>
+				<option>Radius: 15 miles</option>
+			</select>
+
+			<select>
+				<option>Noise: Any</option>
+				<option>Noise: Quiet</option>
+				<option>Noise: Moderate</option>
+				<option>Noise: Loud</option>
+			</select>
+
+			<select>
+				<option>Outlets: Any</option>
+				<option>Outlets: Few</option>
+				<option>Outlets: Plenty</option>
+			</select>
+
+			<select>
+				<option>Wi-Fi: Any</option>
+				<option>Wi-Fi: Basic</option>
+				<option>Wi-Fi: Strong</option>
+			</select>
+
+			<select>
+				<option>Sort: Highest rated</option>
+				<option>Sort: Nearest</option>
+			</select>
+		</div>
 	</section>
 
 	<!-- Results loaded dynamically from MySQL -->
-	<section>
+	<section class='results-section'>
 		<h2>Nearby Spots</h2>
 
 		<%
@@ -84,23 +76,28 @@
 			for (Place place : places) {
 		%>
 
-			<article>
-				<h3><%= place.getName() %></h3>
+			<article class="spot-card">
+				<div class="spot-info">
+					<div class="spot-header">
+						<h3><%= place.getName() %></h3>
+						<span class="rating"><%= place.getOverallRating() %></span>
+					</div>
 
-				<p><%= place.getCategory() %></p>
+					<p class="spot-meta">
+						<%= place.getCategory() %>, <%= place.getCity() %> <%= place.getState() %>
+					</p>
 
-				<p>Rating: <%= place.getOverallRating() %> / 5</p>
+					<p class="spot-address">
+						<%= place.getAddress() %>, <%= place.getCity() %>,
+						<%= place.getState() %> <%= place.getZipCode() %>
+					</p>
 
-				<p>
-					<%= place.getAddress() %>,
-					<%= place.getCity() %>,
-					<%= place.getState() %>
-					<%= place.getZipCode() %>
-				</p>
-
-				<p>Noise: <%= place.getNoiseLevel() %></p>
-				<p>Outlets: <%= place.getOutletLevel() %></p>
-				<p>Wi-Fi: <%= place.getWifiLevel() %></p>
+					<p class="spot-tags">
+						<%= place.getNoiseLevel() %> &middot;
+						Outlets: <%= place.getOutletLevel() %> &middot;
+						Wi-Fi: <%= place.getWifiLevel() %>
+					</p>
+				</div>
 			</article>
 
 		<%
