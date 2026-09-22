@@ -1,4 +1,22 @@
+# IntelliJ
 /shelf/
-/.idea/
+.idea/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# macOS
+.DS_Store
+
+# Local config
 config.json
+
+# Logs
 *.log
+
+# Build output
+/build/
+/target/
+/bin/
