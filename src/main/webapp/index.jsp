@@ -31,38 +31,50 @@
 
 			<button type="button" class="btn-search">Search</button>
 		</form>
+		
+		<%
+			String noise = request.getParameter("noise");
+			String outlets = request.getParameter("outlets");
+			String wifi = request.getParameter("wifi");
+		%>
+		
+		<form class="filter-form" method="GET">
 
-		<div class="search-filters">
-			<select>
-				<option>Radius: 5 miles</option>
-				<option>Radius: 10 miles</option>
-				<option>Radius: 15 miles</option>
-			</select>
-
-			<select>
-				<option>Noise: Any</option>
-				<option>Noise: Quiet</option>
-				<option>Noise: Moderate</option>
-				<option>Noise: Loud</option>
-			</select>
-
-			<select>
-				<option>Outlets: Any</option>
-				<option>Outlets: Few</option>
-				<option>Outlets: Plenty</option>
-			</select>
-
-			<select>
-				<option>Wi-Fi: Any</option>
-				<option>Wi-Fi: Basic</option>
-				<option>Wi-Fi: Strong</option>
-			</select>
-
-			<select>
-				<option>Sort: Highest rated</option>
-				<option>Sort: Nearest</option>
-			</select>
-		</div>
+			<div class="search-filters">
+				<select>
+					<option>Radius: 5 miles</option>
+					<option>Radius: 10 miles</option>
+					<option>Radius: 15 miles</option>
+				</select>
+	
+				<select name ="noise">
+					<option value="">Noise: Any</option>
+					<option value="Quiet">Noise: Quiet</option>
+					<option value="Moderate">Noise: Moderate</option>
+					<option value="Loud">Noise: Loud</option>
+				</select>
+	
+				<select name="outlets">
+					<option value="">Outlets: Any</option>
+					<option value="Some">Outlets: Few</option>
+					<option value="Plenty">Outlets: Plenty</option>
+				</select>
+	
+				<select name="wifi">
+					<option value="">Wi-Fi: Any</option>
+					<option value="Basic">Wi-Fi: Basic</option>
+					<option value="Strong">Wi-Fi: Strong</option>
+				</select>
+	
+				<select>
+					<option>Sort: Highest rated</option>
+					<option>Sort: Nearest</option>
+				</select>
+				
+				<button type="submit">Apply Filters</button>
+			</div>
+		
+		</form>
 	</section>
 
 	<!-- Results loaded dynamically from MySQL -->
@@ -71,7 +83,7 @@
 
 		<%
 			PlaceDAO placeDAO = new PlaceDAO();
-			List<Place> places = placeDAO.getAllPlacesByRating();
+			List<Place> places = placeDAO.getFilteredPlaces(noise, outlets, wifi);
 
 			for (Place place : places) {
 		%>
