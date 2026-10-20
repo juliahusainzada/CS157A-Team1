@@ -15,8 +15,8 @@
 			<span class="logo-serif">Spotter</span>
 		</h1>
 		<nav>
-			<button>Log In</button>
-			<button>   Sign Up</button>
+			<button onclick="window.location.href='pages/login.jsp'">Log In</button>
+			<button onclick="window.location.href='pages/register.jsp'">   Sign Up</button>
 		</nav>
 	</header>
 
