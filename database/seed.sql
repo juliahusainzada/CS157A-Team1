@@ -1,4 +1,223 @@
-USE StudySpotter;
+CREATE DATABASE IF NOT EXISTS `studyspotter`
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_0900_ai_ci;
+
+USE `studyspotter`;
+
+CREATE TABLE IF NOT EXISTS `Users` (
+    user_id INT NOT NULL AUTO_INCREMENT,
+    email VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    status ENUM('Active', 'Banned') NOT NULL DEFAULT 'Active',
+    is_verified BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id),
+    UNIQUE KEY uq_users_email (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `Student` (
+    user_id INT NOT NULL,
+    student_id VARCHAR(50),
+    institution VARCHAR(255) NOT NULL,
+    PRIMARY KEY (user_id),
+    CONSTRAINT fk_student_user
+        FOREIGN KEY (user_id) REFERENCES `Users` (user_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `Owner` (
+    user_id INT NOT NULL,
+    certification VARCHAR(255),
+    business_name VARCHAR(255) NOT NULL,
+    PRIMARY KEY (user_id),
+    CONSTRAINT fk_owner_user
+        FOREIGN KEY (user_id) REFERENCES `Users` (user_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE IF NOT EXISTS `Admin` (
+    user_id INT NOT NULL,
+    access_level VARCHAR(50) NOT NULL DEFAULT 'Moderator',
+    PRIMARY KEY (user_id),
+    CONSTRAINT fk_admin_user
+        FOREIGN KEY (user_id) REFERENCES `Users` (user_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `UserPreferences` (
+    user_id INT NOT NULL,
+    location VARCHAR(255),
+    work_style VARCHAR(50) NOT NULL,
+    radius INT NOT NULL DEFAULT 5,
+    default_latitude DECIMAL(10, 8),
+    default_longitude DECIMAL(11, 8),
+    pref_cafe BOOLEAN NOT NULL DEFAULT TRUE,
+    pref_library BOOLEAN NOT NULL DEFAULT TRUE,
+    pref_park BOOLEAN NOT NULL DEFAULT FALSE,
+    pref_classroom BOOLEAN NOT NULL DEFAULT FALSE,
+    PRIMARY KEY (user_id),
+    CONSTRAINT fk_preferences_student
+        FOREIGN KEY (user_id) REFERENCES `Student` (user_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT chk_preferences_radius CHECK (radius > 0),
+    CONSTRAINT chk_preferences_latitude CHECK (
+        default_latitude IS NULL OR default_latitude BETWEEN -90 AND 90
+    ),
+    CONSTRAINT chk_preferences_longitude CHECK (
+        default_longitude IS NULL OR default_longitude BETWEEN -180 AND 180
+    )
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `Places` (
+    place_id INT NOT NULL AUTO_INCREMENT,
+    owner_user_id INT,
+    category VARCHAR(50) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    latitude DECIMAL(10, 8) NOT NULL,
+    longitude DECIMAL(11, 8) NOT NULL,
+    avg_star_rating DECIMAL(3, 2) NOT NULL DEFAULT 0.00,
+    avg_noise_level DECIMAL(3, 2) NOT NULL DEFAULT 0.00,
+    avg_outlet_density DECIMAL(3, 2) NOT NULL DEFAULT 0.00,
+    avg_seating_availability DECIMAL(3, 2) NOT NULL DEFAULT 0.00,
+    avg_wifi_speed DECIMAL(3, 2) NOT NULL DEFAULT 0.00,
+    avg_food_quality DECIMAL(3, 2) NOT NULL DEFAULT 0.00,
+    avg_ambience_score DECIMAL(3, 2) NOT NULL DEFAULT 0.00,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (place_id),
+    CONSTRAINT fk_places_owner
+        FOREIGN KEY (owner_user_id) REFERENCES `Owner` (user_id)
+        ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT chk_places_latitude CHECK (latitude BETWEEN -90 AND 90),
+    CONSTRAINT chk_places_longitude CHECK (longitude BETWEEN -180 AND 180),
+    CONSTRAINT chk_places_star_rating CHECK (avg_star_rating BETWEEN 0 AND 5),
+    CONSTRAINT chk_places_noise_rating CHECK (avg_noise_level BETWEEN 0 AND 5),
+    CONSTRAINT chk_places_outlet_rating CHECK (avg_outlet_density BETWEEN 0 AND 5),
+    CONSTRAINT chk_places_seating_rating CHECK (avg_seating_availability BETWEEN 0 AND 5),
+    CONSTRAINT chk_places_wifi_rating CHECK (avg_wifi_speed BETWEEN 0 AND 5),
+    CONSTRAINT chk_places_food_rating CHECK (avg_food_quality BETWEEN 0 AND 5),
+    CONSTRAINT chk_places_ambience_rating CHECK (avg_ambience_score BETWEEN 0 AND 5)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `Amenities` (
+    amenity_id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    PRIMARY KEY (amenity_id),
+    UNIQUE KEY uq_amenities_name (name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `PlaceAmenities` (
+    place_id INT NOT NULL,
+    amenities_id INT NOT NULL,
+    PRIMARY KEY (place_id, amenities_id),
+    CONSTRAINT fk_place_amenities_place
+        FOREIGN KEY (place_id) REFERENCES `Places` (place_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_place_amenities_amenity
+        FOREIGN KEY (amenities_id) REFERENCES `Amenities` (amenity_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `Reviews` (
+    review_id INT NOT NULL AUTO_INCREMENT,
+    place_id INT NOT NULL,
+    user_id INT NOT NULL,
+    rating TINYINT NOT NULL,
+    noise_level TINYINT NOT NULL,
+    outlet_count TINYINT NOT NULL,
+    seating TINYINT NOT NULL,
+    wifi_speed TINYINT NOT NULL,
+    food_quality TINYINT NOT NULL,
+    ambiance TINYINT NOT NULL,
+    review_text TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (review_id),
+    CONSTRAINT fk_reviews_place
+        FOREIGN KEY (place_id) REFERENCES `Places` (place_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_reviews_user
+        FOREIGN KEY (user_id) REFERENCES `Student` (user_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT chk_reviews_rating CHECK (rating BETWEEN 1 AND 5),
+    CONSTRAINT chk_reviews_noise CHECK (noise_level BETWEEN 1 AND 5),
+    CONSTRAINT chk_reviews_outlets CHECK (outlet_count BETWEEN 1 AND 5),
+    CONSTRAINT chk_reviews_seating CHECK (seating BETWEEN 1 AND 5),
+    CONSTRAINT chk_reviews_wifi CHECK (wifi_speed BETWEEN 1 AND 5),
+    CONSTRAINT chk_reviews_food CHECK (food_quality BETWEEN 1 AND 5),
+    CONSTRAINT chk_reviews_ambiance CHECK (ambiance BETWEEN 1 AND 5)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `MenuItems` (
+    menu_item_id INT NOT NULL AUTO_INCREMENT,
+    place_id INT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    price DECIMAL(8, 2),
+    description TEXT,
+    dietary_flags VARCHAR(255),
+    PRIMARY KEY (menu_item_id),
+    CONSTRAINT fk_menu_items_place
+        FOREIGN KEY (place_id) REFERENCES `Places` (place_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE IF NOT EXISTS `ClaimRequests` (
+    claim_id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    place_id INT NOT NULL,
+    verification_document_url VARCHAR(500),
+    status VARCHAR(30) NOT NULL DEFAULT 'Pending',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (claim_id),
+    CONSTRAINT fk_claims_owner
+        FOREIGN KEY (user_id) REFERENCES `Owner` (user_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_claims_place
+        FOREIGN KEY (place_id) REFERENCES `Places` (place_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `SavedPlaces` (
+    user_id INT NOT NULL,
+    place_id INT NOT NULL,
+    saved_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, place_id),
+    CONSTRAINT fk_saved_places_student
+        FOREIGN KEY (user_id) REFERENCES `Student` (user_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_saved_places_place
+        FOREIGN KEY (place_id) REFERENCES `Places` (place_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `Reports` (
+    report_id INT NOT NULL AUTO_INCREMENT,
+    reporter_id INT NOT NULL,
+    reason VARCHAR(255) NOT NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'Open',
+    place_id INT,
+    review_id INT,
+    target_user_id INT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (report_id),
+    CONSTRAINT fk_reports_reporter
+        FOREIGN KEY (reporter_id) REFERENCES `Users` (user_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_reports_place
+        FOREIGN KEY (place_id) REFERENCES `Places` (place_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_reports_review
+        FOREIGN KEY (review_id) REFERENCES `Reviews` (review_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_reports_target_user
+        FOREIGN KEY (target_user_id) REFERENCES `Users` (user_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
 
 -- 30 users: 10 students, 10 owners, 10 admins
 INSERT INTO Users

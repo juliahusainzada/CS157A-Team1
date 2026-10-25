@@ -19,20 +19,21 @@
 	</header>
 	<section>
 	
-		<form class="">
-			<label>
-				Email:
-				<input type="text" placeholder="Email">
-			</label>
-			<label>
-				New Password:
-				<input type="text" placeholder="Password">
-			</label>
-			<input type="checkbox" id="student" name="student" value="yes">
-			<label for="student">I am a student</label>
-			
-
-			<button type="button" class="">Sign Up</button>
+		<form method="post"
+     	 	action="${pageContext.request.contextPath}/register">
+		
+		    <label>Email:</label>
+		    <input type="email" name="email" required>
+		    <label>Password:</label>
+		    <input type="password" name="password" required>
+		
+		    <label>Account Type:</label>
+		    <select name="accountType" required>
+		        <option value="STUDENT">Student</option>
+		        <option value="OWNER">Business Owner</option>
+		    </select>
+		
+		    <button type="submit">Sign Up</button>
 		</form>
 	
 	</section>

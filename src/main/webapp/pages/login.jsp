@@ -19,17 +19,16 @@
 	</header>
 	<section>
 	
-		<form class="">
-			<label>
-				Email:
-				<input type="text" placeholder="Email">
-			</label>
-			<label>
-				Password:
-				<input type="text" placeholder="Password">
-			</label>
-
-			<button type="button" class="">Login</button>
+		<form method="post"
+		      action="${pageContext.request.contextPath}/login">
+		
+		    <label>Email:</label>
+		    <input type="email" name="email" required>
+		
+		    <label>Password:</label>
+		    <input type="password" name="password" required>
+		
+		    <button type="submit">Login</button>
 		</form>
 	
 	</section>

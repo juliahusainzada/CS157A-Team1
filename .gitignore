@@ -20,3 +20,4 @@ config.json
 /build/
 /target/
 /bin/
+.metadata/
