@@ -15,8 +15,44 @@
 			<span class="logo-serif">Spotter</span>
 		</h1>
 		<nav>
-			<button onclick="window.location.href='pages/login.jsp'">Log In</button>
-			<button onclick="window.location.href='pages/register.jsp'">   Sign Up</button>
+			<%
+    String loggedInEmail =
+            (String) session.getAttribute("email");
+
+    String role =
+            (String) session.getAttribute("role");
+%>
+<% if ("OWNER".equals(role)) { %>
+    <a href="${pageContext.request.contextPath}/pages/owner-dashboard.jsp">
+        Owner Dashboard
+    </a>
+<% } %>
+
+<% if ("ADMIN".equals(role)) { %>
+    <a href="${pageContext.request.contextPath}/pages/admin-dashboard.jsp">
+        Admin Dashboard
+    </a>
+<% } %>
+<% if (loggedInEmail == null) { %>
+
+    <a href="${pageContext.request.contextPath}/pages/login.jsp">
+        Log In
+    </a>
+
+    <a href="${pageContext.request.contextPath}/pages/register.jsp">
+        Sign Up
+    </a>
+
+<% } else { %>
+
+    <span>Welcome, <%= loggedInEmail %></span>
+
+    <a href="${pageContext.request.contextPath}/logout">
+        Log Out
+    </a>
+
+<% } %>
+
 		</nav>
 	</header>
 

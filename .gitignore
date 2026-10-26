@@ -21,3 +21,5 @@ config.json
 /target/
 /bin/
 .metadata/
+src/main/java/studyspotter/DatabaseConnection.java
+src/main/java/studyspotter/DatabaseConnection.java
