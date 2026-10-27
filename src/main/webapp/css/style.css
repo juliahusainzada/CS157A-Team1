@@ -344,3 +344,14 @@ h2 {
     
 	
 }
+
+/* Navigation links */
+
+nav a {
+    color: var(--text);
+    text-decoration: none;
+}
+
+nav a:hover {
+    color: var(--gold);
+}
