@@ -1,4 +1,4 @@
-package studyspotter;
+package studyspotter.places;
 public class Place {
 	private int placeId;
     private Integer ownerUserId;
@@ -7,6 +7,7 @@ public class Place {
     private String address;
     private double latitude;
     private double longitude;
+    private Double distanceMiles;
     private double avgStarRating;
     private double avgNoiseLevel;
     private double avgOutletDensity;
@@ -74,6 +75,14 @@ public class Place {
 
     public double getLongitude() {
         return longitude;
+    }
+
+    public Double getDistanceMiles() {
+        return distanceMiles;
+    }
+
+    public void setDistanceMiles(double distanceMiles) {
+        this.distanceMiles = distanceMiles;
     }
 
     public double getAvgStarRating() {
