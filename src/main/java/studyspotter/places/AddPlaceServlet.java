@@ -160,7 +160,7 @@ public class AddPlaceServlet extends HttpServlet {
 
                 // Redirect back to the Add a Spot form
                 response.sendRedirect(
-                    request.getContextPath() + "/pages/add-place.jsp"
+                    request.getContextPath() + "/pages/places/add-place.jsp"
                 );
 
             } else {

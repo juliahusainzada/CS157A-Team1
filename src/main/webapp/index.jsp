@@ -44,7 +44,7 @@
                         (String) session.getAttribute("role");
             %>
 
-            <a href="${pageContext.request.contextPath}/pages/add-place.jsp">
+            <a href="${pageContext.request.contextPath}/pages/places/add-place.jsp">
                 Add a Spot
             </a>
 
@@ -245,7 +245,11 @@
             <article class="spot-card">
                 <div class="spot-info">
                     <div class="spot-header">
-                        <h3><%= place.getName() %></h3>
+                        <h3>
+                            <a class="spot-details-link" href="${pageContext.request.contextPath}/pages/places/place-details.jsp?placeId=<%= place.getPlaceId() %>">
+                                <%= escapeHtml(place.getName()) %>
+                            </a>
+                        </h3>
                         <span class="rating">
                             <%= place.getAvgStarRating() == 0
                                 ? "Not yet rated"

@@ -11,6 +11,167 @@ import java.util.Set;
 import studyspotter.DatabaseConnection;
 
 public class PlaceDAO {
+    // Load one venue for its dedicated details page.
+    public Place getPlaceById(int placeId) throws SQLException {
+        String sql = "SELECT * FROM Places WHERE place_id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, placeId);
+
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    return new Place(
+                        rs.getInt("place_id"),
+                        (Integer) rs.getObject("owner_user_id"),
+                        rs.getString("name"),
+                        rs.getString("category"),
+                        rs.getString("address"),
+                        rs.getDouble("latitude"),
+                        rs.getDouble("longitude"),
+                        rs.getDouble("avg_star_rating"),
+                        rs.getDouble("avg_noise_level"),
+                        rs.getDouble("avg_outlet_density"),
+                        rs.getDouble("avg_seating_availability"),
+                        rs.getDouble("avg_wifi_speed"),
+                        rs.getDouble("avg_food_quality"),
+                        rs.getDouble("avg_ambience_score")
+                    );
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public boolean isBookmarked(int userId, int placeId) throws SQLException {
+        String sql = "SELECT 1 FROM SavedPlaces WHERE user_id = ? AND place_id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, userId);
+            statement.setInt(2, placeId);
+
+            try (ResultSet rs = statement.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    public void saveBookmark(int userId, int placeId) throws SQLException {
+        // Repeated saves leave the existing bookmark and its timestamp unchanged.
+        String sql = """
+            INSERT INTO SavedPlaces (user_id, place_id)
+            VALUES (?, ?)
+            ON DUPLICATE KEY UPDATE saved_at = saved_at
+            """;
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, userId);
+            statement.setInt(2, placeId);
+            statement.executeUpdate();
+        }
+    }
+
+    public void removeBookmark(int userId, int placeId) throws SQLException {
+        String sql = "DELETE FROM SavedPlaces WHERE user_id = ? AND place_id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, userId);
+            statement.setInt(2, placeId);
+            statement.executeUpdate();
+        }
+    }
+
+    public List<MenuItem> getMenuItems(int placeId) throws SQLException {
+        List<MenuItem> menuItems = new ArrayList<>();
+        String sql = """
+            SELECT name, price, description, dietary_flags
+            FROM MenuItems
+            WHERE place_id = ?
+            ORDER BY name, menu_item_id
+            """;
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, placeId);
+
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    menuItems.add(new MenuItem(
+                        rs.getString("name"),
+                        rs.getBigDecimal("price"),
+                        rs.getString("description"),
+                        rs.getString("dietary_flags")
+                    ));
+                }
+            }
+        }
+
+        return menuItems;
+    }
+
+    public List<Review> getReviews(int placeId) throws SQLException {
+        List<Review> reviews = new ArrayList<>();
+        String sql = """
+            SELECT rating, noise_level, outlet_count, seating, wifi_speed,
+                   food_quality, ambiance, review_text, created_at
+            FROM Reviews
+            WHERE place_id = ?
+            ORDER BY created_at DESC, review_id DESC
+            """;
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, placeId);
+
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    reviews.add(new Review(
+                        rs.getInt("rating"),
+                        rs.getInt("noise_level"),
+                        rs.getInt("outlet_count"),
+                        rs.getInt("seating"),
+                        rs.getInt("wifi_speed"),
+                        rs.getInt("food_quality"),
+                        rs.getInt("ambiance"),
+                        rs.getString("review_text"),
+                        rs.getTimestamp("created_at").toLocalDateTime()
+                    ));
+                }
+            }
+        }
+
+        return reviews;
+    }
+
+    public List<String> getAmenities(int placeId) throws SQLException {
+        List<String> amenities = new ArrayList<>();
+        String sql = """
+            SELECT a.name
+            FROM PlaceAmenities pa
+            JOIN Amenities a ON a.amenity_id = pa.amenities_id
+            WHERE pa.place_id = ?
+            ORDER BY a.name
+            """;
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, placeId);
+
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    amenities.add(rs.getString("name"));
+                }
+            }
+        }
+
+        return amenities;
+    }
+
     public List<Place> getFilteredPlaces(
             double latitude,
             double longitude,
