@@ -67,6 +67,14 @@
         	Study spot added successfully!
     	</div>
 	<% } %>
+	
+	<!-- Confirmation after submitting a report -->
+	
+	<% if ("1".equals(request.getParameter("reported"))) { %>
+	    <div class="success-message">
+	        Your feedback has been shared.
+	    </div>
+	<% } %>
 
 	<section class='search-section'>
 		<h2>Find a Study Spot</h2>
@@ -157,6 +165,22 @@
 			            Outlets: <%= place.getAvgOutletDensity() %> &middot;
 			            Wi-Fi: <%= place.getAvgWifiSpeed() %>
 			        </p>
+			        
+			        <form action="${pageContext.request.contextPath}/report"
+					      method="POST">
+					
+					    <input type="hidden"
+					           name="placeId"
+					           value="<%= place.getPlaceId() %>">
+					
+					    <input type="text"					
+					           name="reason"				
+					           placeholder="Reason for reporting"				
+					           maxlength="255"				
+					           required>
+					
+					    <button type="submit">Report Spot</button>
+					</form>
 			    </div>
 			</article>
 
@@ -165,6 +189,15 @@
 		%>
 
 	</section>
+	
+	<script>
+	    setTimeout(function() {
+	        const message = document.querySelector(".success-message");
+	        if (message) {
+	            message.style.display = "none";
+	        }
+	    }, 4000);
+	</script>
 
 </body>
 </html>
