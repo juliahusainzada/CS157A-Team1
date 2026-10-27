@@ -1,4 +1,4 @@
-package studyspotter;
+package studyspotter.places;
 
 import java.io.IOException;
 import java.util.Arrays;

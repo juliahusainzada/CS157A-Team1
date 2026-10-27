@@ -1,4 +1,4 @@
-package studyspotter;
+package studyspotter.places;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -8,102 +8,132 @@ import java.util.List;
 import java.sql.PreparedStatement;
 import java.util.Set;
 
+import studyspotter.DatabaseConnection;
+
 public class PlaceDAO {
-	public List<Place> getFilteredPlaces(String noise, String outlets, String wifi) {
-		List<Place> places = new ArrayList<>();
-		
-		String sql = "SELECT * FROM Places";
-		String conditions = "";
-		
-		// Add noise filter
-		if (noise != null && !noise.isEmpty()) {
-		    if (noise.equals("Quiet")) {
-		        conditions += "avg_noise_level <= 2";
-		    } else if (noise.equals("Moderate")) {
-		        conditions += "avg_noise_level > 2 AND avg_noise_level <= 3";
-		    } else if (noise.equals("Loud")) {
-		        conditions += "avg_noise_level > 3";
-		    }
-		}
+    public List<Place> getFilteredPlaces(
+            double latitude,
+            double longitude,
+            int radiusMiles,
+            String noise,
+            String outlets,
+            String wifi,
+            Integer minimumSeating,
+            String dietary,
+            String vibe,
+            String sort) throws SQLException {
 
-		// Add outlets filter
-		if (outlets != null && !outlets.isEmpty()) {
-		    String outletCondition = "";
-		    if (outlets.equals("Some")) {
-		        outletCondition = "avg_outlet_density BETWEEN 1 AND 3";
-		    } else if (outlets.equals("Plenty")) {
-		        outletCondition = "avg_outlet_density >= 4";
-		    }
+        List<Place> places = new ArrayList<>();
+        List<Object> parameters = new ArrayList<>();
 
-		    if (!outletCondition.isEmpty()) {
-		        if (!conditions.isEmpty()) {
-		            conditions += " AND ";
-		        }
+        // POINT uses longitude first; convert meters to miles for the UI
+        StringBuilder sql = new StringBuilder("""
+            SELECT p.*
+            FROM (
+                SELECT Places.*,
+                    ST_Distance_Sphere(
+                        POINT(longitude, latitude), POINT(?, ?)
+                    ) / 1609.344 AS distance_miles
+                FROM Places
+            ) p
+            WHERE p.distance_miles <= ?
+            """);
 
-		        conditions += outletCondition;
-		    }
-		}
+        parameters.add(longitude);
+        parameters.add(latitude);
+        parameters.add(radiusMiles);
 
-		// Add Wi-Fi filter
-		if (wifi != null && !wifi.isEmpty()) {
-		    String wifiCondition = "";
-		    if (wifi.equals("Basic")) {
-		        wifiCondition = "avg_wifi_speed BETWEEN 1 AND 3";
-		    } else if (wifi.equals("Strong")) {
-		        wifiCondition = "avg_wifi_speed >= 4";
-		    }
+        // Apply the existing workability score ranges
+        if ("Quiet".equals(noise)) {
+            sql.append(" AND p.avg_noise_level BETWEEN 1 AND 2");
+        } else if ("Moderate".equals(noise)) {
+            sql.append(" AND p.avg_noise_level > 2 AND p.avg_noise_level <= 3");
+        } else if ("Loud".equals(noise)) {
+            sql.append(" AND p.avg_noise_level > 3");
+        }
 
-		    if (!wifiCondition.isEmpty()) {
-		        if (!conditions.isEmpty()) {
-		            conditions += " AND ";
-		        }
-		        
-		        conditions += wifiCondition;
-		    }
-		}
-		
-		// If at least one filter exists, we add WHERE + conditions to filter DB
-		if (!conditions.isEmpty()) {
-			sql += " WHERE " + conditions;
-		}
-		
-		sql += " ORDER BY avg_star_rating DESC";
-		
-		try (
-			Connection connection = DatabaseConnection.getConnection();
-			Statement statement = connection.createStatement();
-			ResultSet rs = statement.executeQuery(sql);
-		) {
-			
-			while (rs.next()) {
-				Place place = new Place(
-						rs.getInt("place_id"),
-						(Integer) rs.getObject("owner_user_id"),
-						rs.getString("name"),
-						rs.getString("category"),
-						rs.getString("address"),
-	                    rs.getDouble("latitude"),
-	                    rs.getDouble("longitude"),
-	                    rs.getDouble("avg_star_rating"),
-	                    rs.getDouble("avg_noise_level"),
-	                    rs.getDouble("avg_outlet_density"),
-	                    rs.getDouble("avg_seating_availability"),
-	                    rs.getDouble("avg_wifi_speed"),
-	                    rs.getDouble("avg_food_quality"),
-	                    rs.getDouble("avg_ambience_score")
-                );
-				
-				places.add(place);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return places;
-		
-	}
-	
-	
+        if ("Some".equals(outlets)) {
+            sql.append(" AND p.avg_outlet_density BETWEEN 1 AND 3");
+        } else if ("Plenty".equals(outlets)) {
+            sql.append(" AND p.avg_outlet_density >= 4");
+        }
+
+        if ("Basic".equals(wifi)) {
+            sql.append(" AND p.avg_wifi_speed BETWEEN 1 AND 3");
+        } else if ("Strong".equals(wifi)) {
+            sql.append(" AND p.avg_wifi_speed >= 4");
+        }
+
+        if (minimumSeating != null) {
+            sql.append(" AND p.avg_seating_availability >= ?");
+            parameters.add(minimumSeating);
+        }
+
+        // EXISTS returns each venue once, even when several menu items match
+        // Dietary flags are comma-separated labels, matching the existing schema
+        if (dietary != null && !dietary.isEmpty()) {
+            sql.append("""
+                 AND EXISTS (
+                    SELECT 1 FROM MenuItems m
+                    WHERE m.place_id = p.place_id
+                      AND FIND_IN_SET(?, REPLACE(m.dietary_flags, ', ', ',')) > 0
+                )
+                """);
+            parameters.add(dietary);
+        }
+
+        // Check amenity names since that what 'vibe' relies on
+        if (vibe != null && !vibe.isEmpty()) {
+            sql.append("""
+                 AND EXISTS (
+                    SELECT 1 FROM PlaceAmenities pa
+                    JOIN Amenities a ON a.amenity_id = pa.amenities_id
+                    WHERE pa.place_id = p.place_id AND a.name = ?
+                )
+                """);
+            parameters.add(vibe);
+        }
+
+        if ("distance".equals(sort)) {
+            sql.append(" ORDER BY p.distance_miles ASC, p.avg_star_rating DESC, p.place_id ASC");
+        } else {
+            sql.append(" ORDER BY p.avg_star_rating DESC, p.distance_miles ASC, p.place_id ASC");
+        }
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql.toString())) {
+
+            for (int i = 0; i < parameters.size(); i++) {
+                statement.setObject(i + 1, parameters.get(i));
+            }
+
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    Place place = new Place(
+                        rs.getInt("place_id"),
+                        (Integer) rs.getObject("owner_user_id"),
+                        rs.getString("name"),
+                        rs.getString("category"),
+                        rs.getString("address"),
+                        rs.getDouble("latitude"),
+                        rs.getDouble("longitude"),
+                        rs.getDouble("avg_star_rating"),
+                        rs.getDouble("avg_noise_level"),
+                        rs.getDouble("avg_outlet_density"),
+                        rs.getDouble("avg_seating_availability"),
+                        rs.getDouble("avg_wifi_speed"),
+                        rs.getDouble("avg_food_quality"),
+                        rs.getDouble("avg_ambience_score")
+                    );
+                    place.setDistanceMiles(rs.getDouble("distance_miles"));
+                    places.add(place);
+                }
+            }
+        }
+
+        return places;
+    }
+
 	public List<Place> getAllPlacesByRating() {
 		List<Place> places = new ArrayList<>();
 		
