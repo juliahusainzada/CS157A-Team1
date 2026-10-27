@@ -9,8 +9,8 @@
 <body>
 	<header>
 		<h1>
-			<span class="logo-script">Study</span>
-			<span class="logo-serif">Spotter</span>
+				<span class="logo-script">Study</span>
+				<span class="logo-serif">Spotter</span>
 		</h1>
 		<nav>
 			<button>Log In</button>
@@ -28,9 +28,12 @@
 		    <label>Password:</label>
 		    <input type="password" name="password" required>
 		
-		    <button type="submit">Login</button>
+		    <button type="submit">Log In</button>
 		</form>
-	
+		
+		<% if ("1".equals(request.getParameter("error"))) { %>
+		    <p class="error">Invalid email or password.</p>
+		<% } %>
 	</section>
 	
 </body>
