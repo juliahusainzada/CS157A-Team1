@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.PreparedStatement;
+import java.util.Set;
 
 public class PlaceDAO {
 	public List<Place> getFilteredPlaces(String noise, String outlets, String wifi) {
@@ -202,5 +203,87 @@ public class PlaceDAO {
 	    }
 
 	    return null;
+	}
+	
+	// Insert a new study spot and its selected amenities into the database
+	public int addPlace(
+			String name,
+	        String category,
+	        String address,
+	        double latitude,
+	        double longitude,
+	        Set<Integer> amenityIds) throws SQLException {
+	    String insertPlace = """
+	        INSERT INTO Places
+	            (owner_user_id, name, category, address, latitude, longitude)
+	        VALUES (NULL, ?, ?, ?, ?, ?)
+	        """;
+
+	    String insertAmenity = """
+	        INSERT INTO PlaceAmenities (place_id, amenities_id)
+	        VALUES (?, ?)
+	        """;
+
+	    try (Connection connection = DatabaseConnection.getConnection()) {
+	        // Start transaction so both tables update together
+	        connection.setAutoCommit(false);
+	        try {
+	            int placeId;
+	            
+	         // Check for an existing spot before inserting
+	            Place duplicate = findNearbyPlace(latitude, longitude);
+	            if (duplicate != null) {
+	                throw new SQLException(
+	                    "Duplicate spot found: " + duplicate.getName()
+	                    + " (ID: " + duplicate.getPlaceId() + ")"
+	                );
+	            }
+	            
+	            // Insert new study spot
+	            try (PreparedStatement statement =
+	                    connection.prepareStatement(
+	                        insertPlace,
+	                        Statement.RETURN_GENERATED_KEYS)) {
+
+	                statement.setString(1, name);
+	                statement.setString(2, category);
+	                statement.setString(3, address);
+	                statement.setDouble(4, latitude);
+	                statement.setDouble(5, longitude);
+	                statement.executeUpdate();
+
+	                // Retrieve automatically generated place_id
+	                try (ResultSet keys = statement.getGeneratedKeys()) {
+	                    if (!keys.next()) {
+	                        throw new SQLException("Failed to retrieve place ID.");
+	                    }
+	                    
+	                    placeId = keys.getInt(1);
+	                }
+	            }
+
+	            // Insert selected amenities
+	            try (PreparedStatement statement =
+	                    connection.prepareStatement(insertAmenity)) {
+	                for (int amenityId : amenityIds) {
+	                    statement.setInt(1, placeId);
+	                    statement.setInt(2, amenityId);
+	                    statement.addBatch();
+	                }
+
+	                statement.executeBatch();
+
+	            }
+
+	            // Save both inserts
+	            connection.commit();
+	            return placeId;
+
+	        } catch (SQLException e) {
+	            // Undo changes if either insertion fails
+	            connection.rollback();
+	            throw e;
+	        }
+	    }
 	}
 }

@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 import jakarta.servlet.ServletException;
+import java.sql.SQLException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -129,21 +130,36 @@ public class AddPlaceServlet extends HttpServlet {
             }
         }
 
-        // Step 7: Temporary output for testing
-        System.out.println("=== NEW STUDY SPOT ===");
-        System.out.println("Name: " + name);
-        System.out.println("Category: " + category);
-        System.out.println("Address: " + address);
-        System.out.println("Latitude: " + latitude);
-        System.out.println("Longitude: " + longitude);
-        System.out.println("Amenities: " + amenityIds);
+        // Step 7: Save the new study spot to MySQL
+        PlaceDAO placeDAO = new PlaceDAO();
+        try {
+            int newPlaceId = placeDAO.addPlace(
+                name,
+                category,
+                address,
+                latitude,
+                longitude,
+                amenityIds
+            );
 
-        // Database insertion will be implemented next.
-        response.setContentType("text/plain;charset=UTF-8");
+            // Redirect to homepage after successful insertion
+            response.sendRedirect(
+                request.getContextPath() + "/index.jsp?added=1"
+            );
 
-        response.getWriter().println(
-            "Form received successfully! "
-            + "Database insertion is not implemented yet."
-        );
+        } catch (SQLException e) {
+            // Check whether the location is a duplicate
+            if (e.getMessage() != null
+                    && e.getMessage().startsWith("Duplicate spot found:")) {
+                response.sendError(
+                    HttpServletResponse.SC_CONFLICT,
+                    e.getMessage()
+                );
+            } else {
+                throw new ServletException(
+                    "Unable to add study spot.", e
+                );
+            }
+        }
     }
 }
