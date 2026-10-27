@@ -16,12 +16,17 @@
 		</h1>
 		<nav>
 			<%
-    String loggedInEmail =
-            (String) session.getAttribute("email");
-
-    String role =
-            (String) session.getAttribute("role");
-%>
+			    String loggedInEmail =
+			            (String) session.getAttribute("email");
+			
+			    String role =
+			            (String) session.getAttribute("role");
+			%>
+			
+			<a href="${pageContext.request.contextPath}/pages/add-place.jsp">
+			    Add a Spot
+			</a>
+			
 <% if ("OWNER".equals(role)) { %>
     <a href="${pageContext.request.contextPath}/pages/auth/owner-dashboard.jsp">
         Owner Dashboard
