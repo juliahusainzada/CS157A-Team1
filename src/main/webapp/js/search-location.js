@@ -114,7 +114,7 @@
     if (query.includes(";") || query.length > 256 || wordCount > 20) {
       showStatus(
         "Enter a city or ZIP using at most 20 words, without semicolons.",
-        true,
+        true
       );
       input.focus();
       return;
@@ -125,7 +125,7 @@
     if (!token) {
       showStatus(
         "Location lookup is unavailable. Please try again later, or clear the location to use SJSU.",
-        true,
+        true
       );
       return;
     }
@@ -162,7 +162,7 @@
         } else {
           showStatus(
             "Could not look up that location. Check your connection and try again.",
-            true,
+            true
           );
         }
       }
@@ -195,7 +195,7 @@
           if (!data.features || !data.features[0]) {
             showStatus(
               "No location found. Try a city with its state, or a ZIP code.",
-              true,
+              true
             );
             return;
           }

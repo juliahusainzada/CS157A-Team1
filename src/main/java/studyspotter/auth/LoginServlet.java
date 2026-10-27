@@ -52,9 +52,9 @@ public class LoginServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/index.jsp");
 
             } else if ("OWNER".equals(user.getRole())) {
-                response.sendRedirect(request.getContextPath() + "/pages/owner-dashboard.jsp");
+                response.sendRedirect(request.getContextPath() + "/pages/auth/owner-dashboard.jsp");
             } else if ("ADMIN".equals(user.getRole())) {
-                response.sendRedirect(request.getContextPath() + "/pages/admin-dashboard.jsp");
+                response.sendRedirect(request.getContextPath() + "/pages/auth/admin-dashboard.jsp");
             } else {
                 response.sendRedirect(request.getContextPath() + "/pages/login.jsp?error=1");
             }

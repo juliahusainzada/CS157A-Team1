@@ -10,7 +10,7 @@ public class DatabaseConnection {
     
     private static final String USER = "root";
     
-    private static final String PASSWORD = "yourpasswordhere"; //DO NOT COMMIT ACTUAL PASSWORD
+    private static final String PASSWORD = "password"; //DO NOT COMMIT ACTUAL PASSWORD
     
     public static Connection getConnection() throws SQLException {
         try {

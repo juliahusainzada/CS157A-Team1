@@ -50,11 +50,11 @@
 		        <label>Business name:</label>
 		        <input type="text" name="businessName">
 		    </div>
-		    <div>
+		    <!-- <div>
 		        <label>Business proof:</label>
 		        <input type="file" name="businessProof">
 		        <p> Will add file option eventually, does not work for now.</p>
-		    </div>
+		    </div> -->
 		
 		    <button type="submit">Create Account</button>
 		</form>

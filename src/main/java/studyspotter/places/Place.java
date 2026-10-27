@@ -1,4 +1,5 @@
 package studyspotter.places;
+
 public class Place {
 	private int placeId;
     private Integer ownerUserId;

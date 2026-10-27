@@ -26,6 +26,7 @@ public class RegisterServlet extends HttpServlet {
         String studentId = request.getParameter("studentId");
         String institution = request.getParameter("institution");
         String businessName = request.getParameter("businessName");
+        //TODO: get business proof
 
         if (email == null || password == null
                 || accountType == null

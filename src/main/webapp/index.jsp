@@ -1,7 +1,6 @@
 <%@ page import="java.util.List" %>
-<%@ page import="studyspotter.places.Place" %>
+<%@ page import="studyspotter.places.Place" %> 
 <%@ page import="studyspotter.places.PlaceDAO" %>
-
 <%!
     private String escapeHtml(String value) {
         if (value == null) return "";
@@ -44,9 +43,7 @@
                         (String) session.getAttribute("role");
             %>
 
-            <a href="${pageContext.request.contextPath}/pages/places/add-place.jsp">
-                Add a Spot
-            </a>
+            
 
             <% if ("OWNER".equals(role)) { %>
                 <a href="${pageContext.request.contextPath}/pages/auth/owner-dashboard.jsp">
@@ -70,6 +67,9 @@
                 </a>
 
             <% } else { %>
+	            <a href="${pageContext.request.contextPath}/pages/places/add-place.jsp">
+	                Add a Spot
+	            </a>
 
                 <span>Welcome, <%= loggedInEmail %></span>
 
@@ -268,7 +268,8 @@
                         Outlets: <%= place.getAvgOutletDensity() %> &middot;
                         Wi-Fi: <%= place.getAvgWifiSpeed() %>
                     </p>
-
+                    
+				<% if (loggedInEmail != null) { %>
                     <form action="${pageContext.request.contextPath}/report"
                            method="POST">
 
@@ -283,6 +284,7 @@
                            required>
 
                     <button type="submit">Report Spot</button>
+                    <% } %>
                 </form>
                 </div>
             </article>
