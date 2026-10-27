@@ -474,3 +474,14 @@ nav a:hover {
     color: var(--gold);
     margin-bottom: 20px;
 }
+
+/* Mapbox Location Search */
+#location-search-container {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+#location-search-container mapbox-search-box {
+    display: block;
+    width: 100%;
+}

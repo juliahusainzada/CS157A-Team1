@@ -12,6 +12,8 @@
     	href="https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.css"
     	rel="stylesheet"
     >
+    <!-- Get access to Mapbox’s location search functionality -->
+    <script src="https://api.mapbox.com/search-js/v1.6.0/web.js"></script>
 </head>
 
 <body>
@@ -45,11 +47,7 @@
             <!-- Location Search -->
             <label for="location-search">Search for a Location</label>
 
-            <input
-                type="text"
-                id="location-search"
-                placeholder="Search for a cafe, library, or address"
-                autocomplete="off">
+			<div id="location-search-container"></div>
 
             <p>Can't find your location? You'll be able to drop a pin on the map.</p>
 
