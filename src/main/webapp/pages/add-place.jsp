@@ -153,12 +153,10 @@
 
             </fieldset>
 
-            <button type="submit" class="btn-add-spot" disabled>
+            <button type="submit" class="btn-add-spot">
                 Submit Spot
             </button>
-
-            <p>Submission will be enabled after we connect the map and backend.</p>
-
+            
         </form>
 
     </main>
