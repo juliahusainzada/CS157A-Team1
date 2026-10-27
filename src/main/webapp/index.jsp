@@ -16,12 +16,17 @@
 		</h1>
 		<nav>
 			<%
-    String loggedInEmail =
-            (String) session.getAttribute("email");
-
-    String role =
-            (String) session.getAttribute("role");
-%>
+			    String loggedInEmail =
+			            (String) session.getAttribute("email");
+			
+			    String role =
+			            (String) session.getAttribute("role");
+			%>
+			
+			<a href="${pageContext.request.contextPath}/pages/add-place.jsp">
+			    Add a Spot
+			</a>
+			
 <% if ("OWNER".equals(role)) { %>
     <a href="${pageContext.request.contextPath}/pages/auth/owner-dashboard.jsp">
         Owner Dashboard
@@ -55,6 +60,21 @@
 
 		</nav>
 	</header>
+	
+	<!-- Display confirmation after successfully adding a study spot -->
+	<% if ("1".equals(request.getParameter("added"))) { %>
+    	<div class="success-message">
+        	Study spot added successfully!
+    	</div>
+	<% } %>
+	
+	<!-- Confirmation after submitting a report -->
+	
+	<% if ("1".equals(request.getParameter("reported"))) { %>
+	    <div class="success-message">
+	        Your feedback has been shared.
+	    </div>
+	<% } %>
 
 	<section class='search-section'>
 		<h2>Find a Study Spot</h2>
@@ -125,27 +145,43 @@
 		%>
 
 			<article class="spot-card">
-				<div class="spot-info">
-					<div class="spot-header">
-						<h3><%= place.getName() %></h3>
-						<span class="rating"><%= place.getOverallRating() %></span>
-					</div>
-
-					<p class="spot-meta">
-						<%= place.getCategory() %>, <%= place.getCity() %> <%= place.getState() %>
-					</p>
-
-					<p class="spot-address">
-						<%= place.getAddress() %>, <%= place.getCity() %>,
-						<%= place.getState() %> <%= place.getZipCode() %>
-					</p>
-
-					<p class="spot-tags">
-						<%= place.getNoiseLevel() %> &middot;
-						Outlets: <%= place.getOutletLevel() %> &middot;
-						Wi-Fi: <%= place.getWifiLevel() %>
-					</p>
-				</div>
+			    <div class="spot-info">
+			        <div class="spot-header">
+			            <h3><%= place.getName() %></h3>
+			            <span class="rating">
+			                <%= place.getAvgStarRating() == 0
+			                    ? "Not yet rated"
+			                    : String.format("%.1f", place.getAvgStarRating()) %>
+			            </span>
+			        </div>
+			        <p class="spot-meta">
+			            <%= place.getCategory() %>
+			        </p>
+			        <p class="spot-address">
+			            <%= place.getAddress() %>
+			        </p>
+			        <p class="spot-tags">
+			            Noise: <%= place.getAvgNoiseLevel() %> &middot;
+			            Outlets: <%= place.getAvgOutletDensity() %> &middot;
+			            Wi-Fi: <%= place.getAvgWifiSpeed() %>
+			        </p>
+			        
+			        <form action="${pageContext.request.contextPath}/report"
+					      method="POST">
+					
+					    <input type="hidden"
+					           name="placeId"
+					           value="<%= place.getPlaceId() %>">
+					
+					    <input type="text"					
+					           name="reason"				
+					           placeholder="Reason for reporting"				
+					           maxlength="255"				
+					           required>
+					
+					    <button type="submit">Report Spot</button>
+					</form>
+			    </div>
 			</article>
 
 		<%
@@ -153,6 +189,15 @@
 		%>
 
 	</section>
+	
+	<script>
+	    setTimeout(function() {
+	        const message = document.querySelector(".success-message");
+	        if (message) {
+	            message.style.display = "none";
+	        }
+	    }, 4000);
+	</script>
 
 </body>
 </html>
