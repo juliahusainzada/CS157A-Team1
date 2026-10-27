@@ -7,6 +7,11 @@
     <title>Add a Spot</title>
     <link rel="stylesheet"
           href="${pageContext.request.contextPath}/css/style.css">
+         
+    <link
+    	href="https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.css"
+    	rel="stylesheet"
+    >
 </head>
 
 <body>
@@ -49,9 +54,10 @@
             <p>Can't find your location? You'll be able to drop a pin on the map.</p>
 
             <!-- Map placeholder -->
-            <div class="map-placeholder">
-                Interactive map coming soon!
-            </div>
+            <div id="map"></div>
+            <p id="selected-location">
+            	Click anywhere on the map to select a location.
+            </p>
 
             <!-- Spot Name -->
             <label for="name">Spot Name</label>
@@ -158,6 +164,9 @@
         </form>
 
     </main>
+    
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.js"></script>
+	<script src="${pageContext.request.contextPath}/js/place-map.js"></script>
 
 </body>
 </html>
