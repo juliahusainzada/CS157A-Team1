@@ -1,5 +1,5 @@
-package studyspotter;
-
+package studyspotter.auth;
+import studyspotter.DatabaseConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

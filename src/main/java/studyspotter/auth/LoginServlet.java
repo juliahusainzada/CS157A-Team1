@@ -1,4 +1,4 @@
-package studyspotter;
+package studyspotter.auth;
 import java.io.IOException;
 import java.sql.SQLException;
 import jakarta.servlet.ServletException;

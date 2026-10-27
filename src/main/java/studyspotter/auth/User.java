@@ -1,4 +1,4 @@
-package studyspotter;
+package studyspotter.auth;
 
 public class User { //create new User class and get info from db
     private int userId;

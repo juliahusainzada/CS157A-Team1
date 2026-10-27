@@ -23,13 +23,13 @@
             (String) session.getAttribute("role");
 %>
 <% if ("OWNER".equals(role)) { %>
-    <a href="${pageContext.request.contextPath}/pages/owner-dashboard.jsp">
+    <a href="${pageContext.request.contextPath}/pages/auth/owner-dashboard.jsp">
         Owner Dashboard
     </a>
 <% } %>
 
 <% if ("ADMIN".equals(role)) { %>
-    <a href="${pageContext.request.contextPath}/pages/admin-dashboard.jsp">
+    <a href="${pageContext.request.contextPath}/pages/auth/admin-dashboard.jsp">
         Admin Dashboard
     </a>
 <% } %>
