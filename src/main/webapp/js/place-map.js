@@ -1,5 +1,5 @@
 // Replace with your Mapbox public access token
-mapboxgl.accessToken = "<ADD YOUR KEY HERE>";
+mapboxgl.accessToken = "YOUR_MAPBOX_PUBLIC_TOKEN";
 
 // SJSU coordinates
 const sjsuCoordinates = [-121.8811, 37.3352];
@@ -51,6 +51,36 @@ map.on("click", function(event) {
 
     console.log("Latitude:", latitude);
     console.log("Longitude:", longitude);
+	
+	// Find the address associated with the dropped pin
+	const url = "https://api.mapbox.com/search/geocode/v6/reverse"
+	    + "?longitude=" + longitude
+	    + "&latitude=" + latitude
+	    + "&access_token=" + mapboxgl.accessToken;
+	
+	fetch(url)
+	    .then(response => {
+	        if (!response.ok) {
+	            throw new Error("Reverse geocoding failed");
+	        }
+	        return response.json();
+	    })
+	    .then(data => {
+	        if (data.features && data.features.length > 0) {
+	            const properties = data.features[0].properties;
+	            const address =
+	                properties.full_address ||
+	                properties.name ||
+	                "";
+
+	            document.getElementById("address").value = address;
+	            document.getElementById("selected-location").textContent =
+	                "Selected location: " + address;
+	        }
+	    })
+	    .catch(error => {
+	        console.error("Reverse geocoding error:", error);
+	    });
 });
 
 // Initialize Mapbox location search
