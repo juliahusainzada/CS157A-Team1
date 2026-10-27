@@ -485,3 +485,16 @@ nav a:hover {
     display: block;
     width: 100%;
 }
+
+/* Success confirmation */
+
+.success-message {
+    background-color: #5A6A4C;
+    color: var(--text);
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 30px;
+    text-align: center;
+    font-size: 22px;
+}

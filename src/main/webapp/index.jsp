@@ -60,6 +60,13 @@
 
 		</nav>
 	</header>
+	
+	<!-- Display confirmation after successfully adding a study spot -->
+	<% if ("1".equals(request.getParameter("added"))) { %>
+    	<div class="success-message">
+        	Study spot added successfully!
+    	</div>
+	<% } %>
 
 	<section class='search-section'>
 		<h2>Find a Study Spot</h2>
