@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.PreparedStatement;
 
 public class PlaceDAO {
 	public List<Place> getFilteredPlaces(String noise, String outlets, String wifi) {
@@ -139,5 +140,67 @@ public class PlaceDAO {
 		
 		return places;
 		
+	}
+	
+	// Check whether a study spot already exists within 50 meters
+	public Place findNearbyPlace(double latitude, double longitude)
+	        throws SQLException {
+		
+		// Check for duplicate study spots within 50 meters
+		// ST_Distance_Sphere calculates the distance (in meters) between two coordinates
+		// POINT uses longitude first, then latitude. The ? placeholders represent
+		// the new spot's coordinates, which are provided through PreparedStatement
+		// Return the closest matching spot, if one exists
+		
+	    String sql = """
+	        SELECT *,
+	            ST_Distance_Sphere(
+	                POINT(longitude, latitude),
+	                POINT(?, ?)
+	            ) AS distance_meters
+	        FROM Places
+	        WHERE ST_Distance_Sphere(
+	            POINT(longitude, latitude),
+	            POINT(?, ?)
+	        ) <= 50
+	        ORDER BY distance_meters ASC
+	        LIMIT 1
+	        """;
+
+	    try (
+	        Connection connection = DatabaseConnection.getConnection();
+	        PreparedStatement statement = connection.prepareStatement(sql)
+	    ) {
+
+	        // POINT uses longitude first, then latitude
+	        statement.setDouble(1, longitude);
+	        statement.setDouble(2, latitude);
+	        statement.setDouble(3, longitude);
+	        statement.setDouble(4, latitude);
+
+	        try (ResultSet rs = statement.executeQuery()) {
+
+	            if (rs.next()) {
+	                return new Place(
+	                    rs.getInt("place_id"),
+	                    (Integer) rs.getObject("owner_user_id"),
+	                    rs.getString("name"),
+	                    rs.getString("category"),
+	                    rs.getString("address"),
+	                    rs.getDouble("latitude"),
+	                    rs.getDouble("longitude"),
+	                    rs.getDouble("avg_star_rating"),
+	                    rs.getDouble("avg_noise_level"),
+	                    rs.getDouble("avg_outlet_density"),
+	                    rs.getDouble("avg_seating_availability"),
+	                    rs.getDouble("avg_wifi_speed"),
+	                    rs.getDouble("avg_food_quality"),
+	                    rs.getDouble("avg_ambience_score")
+	                );
+	            }
+	        }
+	    }
+
+	    return null;
 	}
 }
