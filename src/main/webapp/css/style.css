@@ -498,3 +498,25 @@ nav a:hover {
     text-align: center;
     font-size: 22px;
 }
+
+/* Duplicate study spot warning */
+.duplicate-warning {
+    background-color: #4A4936;
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0 30px;
+    color: var(--text);
+}
+
+.duplicate-warning strong {
+    display: block;
+    font-size: 23px;
+    color: var(--gold);
+    margin-bottom: 12px;
+}
+
+.duplicate-warning p {
+    font-size: 19px;
+    margin: 8px 0;
+}

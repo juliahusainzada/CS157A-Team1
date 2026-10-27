@@ -151,10 +151,18 @@ public class AddPlaceServlet extends HttpServlet {
             // Check whether the location is a duplicate
             if (e.getMessage() != null
                     && e.getMessage().startsWith("Duplicate spot found:")) {
-                response.sendError(
-                    HttpServletResponse.SC_CONFLICT,
+
+                // Store the duplicate message in the user's session
+                session.setAttribute(
+                    "duplicateMessage",
                     e.getMessage()
                 );
+
+                // Redirect back to the Add a Spot form
+                response.sendRedirect(
+                    request.getContextPath() + "/pages/add-place.jsp"
+                );
+
             } else {
                 throw new ServletException(
                     "Unable to add study spot.", e

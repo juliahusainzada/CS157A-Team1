@@ -2,6 +2,20 @@
 
 <!DOCTYPE html>
 <html>
+
+<%!
+    // Escape HTML to safely display user-submitted spot names
+    private String escapeHtml(String value) {
+        if (value == null) return "";
+        return value.replace("&", "&amp;")
+                    .replace("<", "&lt;")
+                    .replace(">", "&gt;")
+                    .replace("\"", "&quot;")
+                    .replace("'", "&#39;");
+    }
+
+%>
+
 <head>
     <meta charset="UTF-8">
     <title>Add a Spot</title>
@@ -31,14 +45,38 @@
         </nav>
     </header>
 
-    <main class="add-spot-section">
-
-        <h2>Add a New Study Spot</h2>
-
-        <p>
-            Know a great place to study?
-            Share it with the StudySpotter community!
-        </p>
+	<main class="add-spot-section">
+	    <h2>Add a New Study Spot</h2>
+	    <%
+	        // Retrieve duplicate message stored by AddPlaceServlet
+	        String duplicateMessage =
+	            (String) session.getAttribute("duplicateMessage");
+	        
+	    	// Remove message so it only appears once
+	        session.removeAttribute("duplicateMessage");
+	    %>
+	
+	    <% if (duplicateMessage != null) { %>
+	        <div class="duplicate-warning">
+	            <strong>
+	                A study spot already exists near this location!
+	            </strong>
+	
+	            <p>
+	                <%= escapeHtml(duplicateMessage) %>
+	            </p>
+	
+	            <p>
+	                Please review the existing spot before submitting another.
+	            </p>
+	
+	        </div>
+	    <% } %>
+	
+	    <p>
+	        Know a great place to study?
+	        Share it with the StudySpotter community!
+	    </p>
 
         <form class="add-spot-form"
               action="${pageContext.request.contextPath}/add-place"
