@@ -125,27 +125,27 @@
 		%>
 
 			<article class="spot-card">
-				<div class="spot-info">
-					<div class="spot-header">
-						<h3><%= place.getName() %></h3>
-						<span class="rating"><%= place.getOverallRating() %></span>
-					</div>
-
-					<p class="spot-meta">
-						<%= place.getCategory() %>, <%= place.getCity() %> <%= place.getState() %>
-					</p>
-
-					<p class="spot-address">
-						<%= place.getAddress() %>, <%= place.getCity() %>,
-						<%= place.getState() %> <%= place.getZipCode() %>
-					</p>
-
-					<p class="spot-tags">
-						<%= place.getNoiseLevel() %> &middot;
-						Outlets: <%= place.getOutletLevel() %> &middot;
-						Wi-Fi: <%= place.getWifiLevel() %>
-					</p>
-				</div>
+			    <div class="spot-info">
+			        <div class="spot-header">
+			            <h3><%= place.getName() %></h3>
+			            <span class="rating">
+			                <%= place.getAvgStarRating() == 0
+			                    ? "Not yet rated"
+			                    : String.format("%.1f", place.getAvgStarRating()) %>
+			            </span>
+			        </div>
+			        <p class="spot-meta">
+			            <%= place.getCategory() %>
+			        </p>
+			        <p class="spot-address">
+			            <%= place.getAddress() %>
+			        </p>
+			        <p class="spot-tags">
+			            Noise: <%= place.getAvgNoiseLevel() %> &middot;
+			            Outlets: <%= place.getAvgOutletDensity() %> &middot;
+			            Wi-Fi: <%= place.getAvgWifiSpeed() %>
+			        </p>
+			    </div>
 			</article>
 
 		<%
