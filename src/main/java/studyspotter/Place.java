@@ -1,48 +1,59 @@
 package studyspotter;
 public class Place {
 	private int placeId;
-	private String name;
+    private Integer ownerUserId;
+    private String name;
     private String category;
     private String address;
-    private String city;
-    private String state;
-    private String zipCode;
-    private double overallRating;
-    private String noiseLevel;
-    private String outletLevel;
-    private String wifiLevel;
-    private String imageUrl;
+    private double latitude;
+    private double longitude;
+    private double avgStarRating;
+    private double avgNoiseLevel;
+    private double avgOutletDensity;
+    private double avgSeatingAvailability;
+    private double avgWifiSpeed;
+    private double avgFoodQuality;
+    private double avgAmbienceScore;
     
-    public Place(int placeId, 
-    		String name, 
-    		String category,
-    		String address, 
-    		String city, 
-    		String state, 
-    		String zipCode,
-            double overallRating, 
-            String noiseLevel,
-            String outletLevel, 
-            String wifiLevel, 
-            String imageUrl) 
-    {
-    	
-    	this.placeId = placeId;
+    public Place(
+            int placeId,
+            Integer ownerUserId,
+            String name,
+            String category,
+            String address,
+            double latitude,
+            double longitude,
+            double avgStarRating,
+            double avgNoiseLevel,
+            double avgOutletDensity,
+            double avgSeatingAvailability,
+            double avgWifiSpeed,
+            double avgFoodQuality,
+            double avgAmbienceScore) {
+
+        this.placeId = placeId;
+        this.ownerUserId = ownerUserId;
         this.name = name;
         this.category = category;
         this.address = address;
-        this.city = city;
-        this.state = state;
-        this.zipCode = zipCode;
-        this.overallRating = overallRating;
-        this.noiseLevel = noiseLevel;
-        this.outletLevel = outletLevel;
-        this.wifiLevel = wifiLevel;
-        this.imageUrl = imageUrl;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.avgStarRating = avgStarRating;
+        this.avgNoiseLevel = avgNoiseLevel;
+        this.avgOutletDensity = avgOutletDensity;
+        this.avgSeatingAvailability = avgSeatingAvailability;
+        this.avgWifiSpeed = avgWifiSpeed;
+        this.avgFoodQuality = avgFoodQuality;
+        this.avgAmbienceScore = avgAmbienceScore;
+
     }
-    
+
     public int getPlaceId() {
         return placeId;
+    }
+
+    public Integer getOwnerUserId() {
+        return ownerUserId;
     }
 
     public String getName() {
@@ -57,35 +68,40 @@ public class Place {
         return address;
     }
 
-    public String getCity() {
-        return city;
+    public double getLatitude() {
+        return latitude;
     }
 
-    public String getState() {
-        return state;
+    public double getLongitude() {
+        return longitude;
     }
 
-    public String getZipCode() {
-        return zipCode;
+    public double getAvgStarRating() {
+        return avgStarRating;
     }
 
-    public double getOverallRating() {
-        return overallRating;
+    public double getAvgNoiseLevel() {
+        return avgNoiseLevel;
     }
 
-    public String getNoiseLevel() {
-        return noiseLevel;
+    public double getAvgOutletDensity() {
+        return avgOutletDensity;
     }
 
-    public String getOutletLevel() {
-        return outletLevel;
+    public double getAvgSeatingAvailability() {
+        return avgSeatingAvailability;
     }
 
-    public String getWifiLevel() {
-        return wifiLevel;
+    public double getAvgWifiSpeed() {
+        return avgWifiSpeed;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public double getAvgFoodQuality() {
+        return avgFoodQuality;
     }
+
+    public double getAvgAmbienceScore() {
+        return avgAmbienceScore;
+    }
+
 }
