@@ -82,11 +82,36 @@
     </header>
 
     <main class="place-details">
-        <% if (detailsError != null) { %>
-            <h2>Spot Details</h2>
-            <p><%= escapeHtml(detailsError) %></p>
-        <% } else { %>
-            <section class="place-overview">
+	    <%
+	        String claimStatus = request.getParameter("claim");
+	        String claimMessage = null;
+	        String claimType = "success";
+	
+	        if ("success".equals(claimStatus)) {
+	            claimMessage = "Your claim has been submitted for admin review!";
+	
+	        } else if ("duplicate".equals(claimStatus)) {
+	            claimMessage = "You already have a pending claim for this business.";
+	            claimType = "warning";
+	
+	        } else if ("owned".equals(claimStatus)) {
+	            claimMessage = "This business has already been claimed.";
+	            claimType = "error";
+	        }
+	    %>
+	
+	    <% if (claimMessage != null) { %>
+	        <div id="claim-toast" class="claim-toast <%= claimType %>" role="status">
+	            <%= escapeHtml(claimMessage) %>
+	        </div>
+	    <% } %>
+	
+	    <% if (detailsError != null) { %>
+	        <h2>Spot Details</h2>
+	        <p><%= escapeHtml(detailsError) %></p>
+
+	    <% } else { %>
+        	<section class="place-overview">
                 <div class="place-overview-info">
                     <p class="spot-meta"><%= escapeHtml(place.getCategory()) %></p>
                     <h2><%= escapeHtml(place.getName()) %></h2>
@@ -102,9 +127,31 @@
                         </form>
                     <% } else if (userId == null) { %>
                         <a class="bookmark-button" href="${pageContext.request.contextPath}/pages/login.jsp">Log in to bookmark</a>
-                    <% } else { %>
-                        <p class="detail-placeholder">Bookmarks are available to student accounts.</p>
                     <% } %>
+                <% if ("OWNER".equals(session.getAttribute("role"))) { %>
+        			<% if (place.getOwnerUserId() == null) { %>
+        				<form action="${pageContext.request.contextPath}/claim-business" method="POST">
+            				<input type="hidden" 
+		            			name="placeId" 
+		            			value="<%= place.getPlaceId() %>"
+		            		>
+
+		            		<input type="url" 
+		            			name="verificationUrl" 
+		            			placeholder="Verification document URL" 
+		            			maxlength="250"
+		            			required
+		            		>
+
+		            		<button type="submit">
+		                		Claim This Business
+		            		</button>
+		
+		        		</form>
+			    	<% } else { %>
+			        	<p class="detail-placeholder">Business already claimed.</p>
+			    	<% } %>
+				<% } %>  
                 </div>
             </section>
 
@@ -180,5 +227,15 @@
             </section>
         <% } %>
     </main>
+    
+	<script>
+	    const toast = document.getElementById("claim-toast");
+	    if (toast) {
+	        setTimeout(() => {
+	            toast.classList.add("fade-out");
+	            setTimeout(() => toast.remove(), 300);
+	        }, 4000);
+	    }
+	</script>
 </body>
 </html>

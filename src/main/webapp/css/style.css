@@ -642,3 +642,36 @@ nav a:hover {
     .place-overview { grid-template-columns: minmax(0, 1fr); gap: 12px; }
     .place-overview h2 { font-size: 34px; }
 }
+
+.claim-toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 1000;
+    padding: 16px 24px;
+    border-radius: 10px;
+    background: #e8f5e9;
+    color: #256029;
+    border: 1px solid #a5d6a7;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    font-size: 14px;
+    font-weight: 500;
+    max-width: 350px;
+    transition: opacity 0.3s ease;
+}
+
+.claim-toast.warning {
+    background: #fff8e1;
+    color: #8a6500;
+    border-color: #ffe082;
+}
+
+.claim-toast.error {
+    background: #ffebee;
+    color: #b71c1c;
+    border-color: #ef9a9a;
+}
+
+.claim-toast.fade-out {
+    opacity: 0;
+}
