@@ -675,3 +675,25 @@ nav a:hover {
 .claim-toast.fade-out {
     opacity: 0;
 }
+
+.study-spots-menu { position: relative; }
+.study-spots-menu summary { cursor: pointer; white-space: nowrap; }
+.study-spots-options {
+    position: absolute;
+    left: 0;
+    top: 100%;
+    z-index: 10;
+    padding: 8px 12px;
+    background: var(--bg);
+    border: 1px solid var(--divider);
+}
+.study-spots-options a { display: block; padding: 4px 0; white-space: nowrap; }
+
+.saved-spot-card { position: relative; }
+.saved-spot-card .spot-details-link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+}
+.saved-spot-card form { position: relative; z-index: 1; width: fit-content; }
+.saved-spot-card:focus-within { outline: 2px solid var(--gold); outline-offset: 4px; }
