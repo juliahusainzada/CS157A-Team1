@@ -119,6 +119,15 @@ nav button + button::before {
     color: var(--text);
 }
 
+/* error msgs */
+.error {
+    color: #b71c1c;
+    background: #ffebee;
+    border: 1px solid #ef9a9a;
+    padding: 10px;
+    margin: 12px 0;
+}
+
 /* Section headings */
 
 h2 {

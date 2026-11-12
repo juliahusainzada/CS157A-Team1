@@ -18,28 +18,36 @@ public class LoginServlet extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
+        if (email == null || email.isBlank()
+                || password == null || password.isBlank()) {
+
+            response.sendRedirect(
+                    request.getContextPath()
+                    + "/pages/login.jsp?error=missing"
+            );
+            return;
+        }
+
         try {
             UserDAO userDAO = new UserDAO();
             User user = userDAO.findByEmail(email);
 
-            boolean validLogin = user != null
-                    && "Active".equals(user.getStatus())
-                    && PasswordUtil.verifyPassword( password, user.getPasswordHash() );
+            if (user == null || !PasswordUtil.verifyPassword( password, user.getPasswordHash())) {
+                response.sendRedirect( request.getContextPath() + "/pages/login.jsp?error=invalid");
+                return;
+            }
 
-            if (!validLogin) {
-                response.sendRedirect(
-                        request.getContextPath()
-                        + "/pages/login.jsp?error=1"
-                );
+            if (!"Active".equals(user.getStatus())) {
+                response.sendRedirect(request.getContextPath() + "/pages/login.jsp?error=inactive");
                 return;
             }
 
             /*
-             * his is where the session is created
+             * this is where the session is created
              */
             HttpSession session = request.getSession();
 
-            // Helps prevent session fixation
+            // helps prevent session fixation
             request.changeSessionId();
 
             session.setAttribute("userId", user.getUserId());
