@@ -8,7 +8,7 @@ public class User { //create new User class and get info from db
     private String role;
 
     public User(int userId, String email, String passwordHash, String status, String role) {
-        this.userId = userId;
+        this.userId = userId; 
         this.email = email;
         this.passwordHash = passwordHash;
         this.status = status;

@@ -9,8 +9,10 @@
 <body>
 	<header>
 		<h1>
-			<span class="logo-script">Study</span>
-			<span class="logo-serif">Spotter</span>
+			<a class="logo-link" href="${pageContext.request.contextPath}/index.jsp">
+                <span class="logo-script">Study</span>
+                <span class="logo-serif">Spotter</span>
+            </a>
 		</h1>
 		<nav>
 			<button onclick="window.location.href='login.jsp'">Log In</button>
@@ -57,9 +59,25 @@
 		    </div> -->
 		
 		    <button type="submit">Create Account</button>
+		    
 		</form>
 	
 	</section>
+	<%
+	    String registrationError = request.getParameter("error");
+	%>
+	
+	<%  if ("student_email".equals(registrationError)) { %>
+	    <p class="error">Students must use a valid .edu email address.</p>
+	<% } else if ("institution".equals(registrationError)) { %>
+	    <p class="error">Please enter your institution.</p>
+	<% } else if ("business".equals(registrationError)) { %>
+	    <p class="error">Please enter your business name.</p>
+	<% } else if ("duplicate".equals(registrationError)) { %>
+	    <p class="error">An account with that email already exists.</p>
+	<% } else if ("role".equals(registrationError)) { %>
+	    <p class="error">Please select a valid account type.</p>
+	<% } %>
 	
 </body>
 </html>

@@ -9,8 +9,10 @@
 <body>
 	<header>
 		<h1>
-				<span class="logo-script">Study</span>
-				<span class="logo-serif">Spotter</span>
+			<a class="logo-link" href="${pageContext.request.contextPath}/index.jsp">
+                <span class="logo-script">Study</span>
+                <span class="logo-serif">Spotter</span>
+            </a>
 		</h1>
 		<nav>
 			<button>Log In</button>
@@ -31,8 +33,17 @@
 		    <button type="submit">Log In</button>
 		</form>
 		
-		<% if ("1".equals(request.getParameter("error"))) { %>
+		<%
+		    String loginError = request.getParameter("error");
+		    String registered = request.getParameter("registered");
+		%>
+		
+		<% if ("invalid".equals(loginError)) { %>
 		    <p class="error">Invalid email or password.</p>
+		<% } else if ("inactive".equals(loginError)) { %>
+		    <p class="error">This account is inactive or banned.</p>
+		<% } else if ("database".equals(loginError)) { %>
+		    <p class="error">A database error occurred. Please try again later.</p>
 		<% } %>
 	</section>
 	
