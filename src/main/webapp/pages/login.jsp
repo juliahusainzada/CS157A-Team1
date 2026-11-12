@@ -35,7 +35,6 @@
 		
 		<%
 		    String loginError = request.getParameter("error");
-		    String registered = request.getParameter("registered");
 		%>
 		
 		<% if ("invalid".equals(loginError)) { %>

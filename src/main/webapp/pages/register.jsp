@@ -30,28 +30,65 @@
 		    <label>Password:</label>
 		    <input type="password"  name="password" required>
 		</div>
-		    <div>
-		    <label>Account type:</label>
-		    <select name="accountType" required>
-		        <option value="STUDENT">Student</option>
-		        <option value="OWNER">Business Owner</option>
-		    </select>
-		</div>
-		    <div>
-		        <label>Student ID:</label>
-		        <input type="text" name="studentId">
-		    </div>
 		
-		    <div>
-		        <label>Institution:</label>
-		        <input type="text" name="institution">
-		    </div>
-		
-		        <p> Leave below blank if you are a student.</p>
-		    <div>
-		        <label>Business name:</label>
-		        <input type="text" name="businessName">
-		    </div>
+	    <div>
+	        <label for="accountType">Account type:</label>
+
+			<select id="accountType" name="accountType" required>
+			    <option value="">Select account type</option>
+			    <option value="STUDENT">Student</option>
+			    <option value="OWNER">Business Owner</option>
+			</select>
+			
+			<div id="studentFields" hidden>
+			    <label for="studentId">Student ID:</label>
+			    <input type="text" id="studentId" name="studentId">
+			
+			    <label for="institution">Institution:</label>
+			    <input type="text" id="institution" name="institution">
+			</div>
+			
+			<div id="ownerFields" hidden>
+			    <label for="businessName">Business name:</label>
+			    <input type="text" id="businessName" name="businessName">
+			</div>
+			
+			<script>
+			    const accountType = document.getElementById("accountType");
+			    const studentFields = document.getElementById("studentFields");
+			    const ownerFields = document.getElementById("ownerFields");
+			
+			    const studentId = document.getElementById("studentId");
+			    const institution = document.getElementById("institution");
+			    const businessName = document.getElementById("businessName");
+			
+			    function updateFields() {
+			        const selectedType = accountType.value;
+			
+			        const isStudent = selectedType === "STUDENT";
+			        const isOwner = selectedType === "OWNER";
+			
+			        studentFields.hidden = !isStudent;
+			        ownerFields.hidden = !isOwner;
+			
+			        studentId.required = isStudent;
+			        institution.required = isStudent;
+			        businessName.required = isOwner;
+			
+			        if (!isStudent) {
+			            studentId.value = "";
+			            institution.value = "";
+			        }
+			
+			        if (!isOwner) {
+			            businessName.value = "";
+			        }
+			    }
+			
+			    accountType.addEventListener("change", updateFields);
+			    updateFields();
+			</script>
+	    </div>
 		    <!-- <div>
 		        <label>Business proof:</label>
 		        <input type="file" name="businessProof">
