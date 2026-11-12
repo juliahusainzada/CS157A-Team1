@@ -64,6 +64,11 @@ public class BookmarkServlet extends HttpServlet {
                 placeDAO.removeBookmark(userId, placeId);
             }
 
+            if ("remove".equals(action) && "saved".equals(request.getParameter("returnTo"))) {
+                response.sendRedirect(request.getContextPath() + "/pages/places/saved-spots.jsp?removed=1");
+                return;
+            }
+
             response.sendRedirect(
                 request.getContextPath() + "/pages/places/place-details.jsp?placeId=" + placeId
             );

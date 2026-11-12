@@ -45,6 +45,41 @@ public class PlaceDAO {
         return null;
     }
 
+    public List<Place> getSavedPlaces(int userId) throws SQLException {
+        List<Place> places = new ArrayList<>();
+        String sql = """
+            SELECT p.* FROM SavedPlaces s
+            JOIN Places p ON p.place_id = s.place_id
+            WHERE s.user_id = ?
+            ORDER BY s.saved_at DESC, p.place_id DESC
+            """;
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, userId);
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    places.add(new Place(
+                        rs.getInt("place_id"),
+                        (Integer) rs.getObject("owner_user_id"),
+                        rs.getString("name"),
+                        rs.getString("category"),
+                        rs.getString("address"),
+                        rs.getDouble("latitude"),
+                        rs.getDouble("longitude"),
+                        rs.getDouble("avg_star_rating"),
+                        rs.getDouble("avg_noise_level"),
+                        rs.getDouble("avg_outlet_density"),
+                        rs.getDouble("avg_seating_availability"),
+                        rs.getDouble("avg_wifi_speed"),
+                        rs.getDouble("avg_food_quality"),
+                        rs.getDouble("avg_ambience_score")
+                    ));
+                }
+            }
+        }
+        return places;
+    }
+
     public boolean isBookmarked(int userId, int placeId) throws SQLException {
         String sql = "SELECT 1 FROM SavedPlaces WHERE user_id = ? AND place_id = ?";
 

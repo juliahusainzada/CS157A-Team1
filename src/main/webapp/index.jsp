@@ -25,7 +25,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>StudySpotter</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=saved-spots-2">
 </head>
 
 <body>
@@ -36,6 +36,7 @@
         </h1>
         <nav>
             <%
+                boolean savedSpots = false;
                 String loggedInEmail =
                         (String) session.getAttribute("email");
 
@@ -67,9 +68,13 @@
                 </a>
 
             <% } else { %>
-	            <a href="${pageContext.request.contextPath}/pages/places/add-place.jsp">
-	                Add a Spot
-	            </a>
+<details class="study-spots-menu">
+                    <summary>Study Spots</summary>
+                    <div class="study-spots-options">
+                        <a href="${pageContext.request.contextPath}/pages/places/saved-spots.jsp">Saved Spots</a>
+                        <a href="${pageContext.request.contextPath}/pages/places/add-place.jsp">Add a spot</a>
+                    </div>
+                </details>
 
                 <span>Welcome, <%= loggedInEmail %></span>
 
@@ -242,7 +247,7 @@
             for (Place place : places) {
         %>
 
-            <article class="spot-card">
+            <article class="spot-card<%= savedSpots ? " saved-spot-card" : "" %>">
                 <div class="spot-info">
                     <div class="spot-header">
                         <h3>
@@ -257,11 +262,13 @@
                         </span>
                     </div>
                     <p class="spot-meta">
-                        <%= place.getCategory() %> &middot;
+                        <%= escapeHtml(place.getCategory()) %>
+                        <% if (!savedSpots) { %> &middot;
                         <%= String.format(java.util.Locale.US, "%.1f", place.getDistanceMiles()) %> miles away
+                        <% } %>
                     </p>
                     <p class="spot-address">
-                        <%= place.getAddress() %>
+                        <%= escapeHtml(place.getAddress()) %>
                     </p>
                     <p class="spot-tags">
                         Noise: <%= place.getAvgNoiseLevel() %> &middot;
@@ -269,23 +276,20 @@
                         Wi-Fi: <%= place.getAvgWifiSpeed() %>
                     </p>
                     
-				<% if (loggedInEmail != null) { %>
-                    <form action="${pageContext.request.contextPath}/report"
-                           method="POST">
-
-                    <input type="hidden"
-                           name="placeId"
-                           value="<%= place.getPlaceId() %>">
-
-                    <input type="text"
-                           name="reason"
-                           placeholder="Reason for reporting"
-                           maxlength="255"
-                           required>
-
-                    <button type="submit">Report Spot</button>
-                    <% } %>
-                </form>
+                <% if (savedSpots) { %>
+                    <form action="${pageContext.request.contextPath}/bookmark" method="POST">
+                        <input type="hidden" name="placeId" value="<%= place.getPlaceId() %>">
+                        <input type="hidden" name="action" value="remove">
+                        <input type="hidden" name="returnTo" value="saved">
+                        <button type="submit">Unsave</button>
+                    </form>
+                <% } else if (loggedInEmail != null) { %>
+                    <form action="${pageContext.request.contextPath}/report" method="POST">
+                        <input type="hidden" name="placeId" value="<%= place.getPlaceId() %>">
+                        <input type="text" name="reason" placeholder="Reason for reporting" maxlength="255" required>
+                        <button type="submit">Report Spot</button>
+                    </form>
+                <% } %>
                 </div>
             </article>
 
