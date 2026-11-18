@@ -73,8 +73,21 @@
             <% } %>
         </nav>
         </header>
+        	<% if ("OWNER".equals(role)) { %>
+                
+                
+                <h1>Your Business</h1>
+        		<p>Under Review</p>
+                
+                
+                
+                
+                
+            <% } else {%>
+            
+            <p> You are not a business owner. </p>
+            
+            <% } %>
         
-        <h1>Your Business</h1>
-        <p>Under Review</p>
         </body>
         </html>
