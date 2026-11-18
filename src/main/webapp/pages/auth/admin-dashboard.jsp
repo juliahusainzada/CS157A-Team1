@@ -13,25 +13,6 @@
     ReportDAO reportDAO = new ReportDAO();
     List<Report> reports = reportDAO.getOpenReports();
 %>
-<%!
-    private String escapeHtml(String value) {
-        if (value == null) return "";
-        return value.replace("&", "&amp;")
-                    .replace("<", "&lt;")
-                    .replace(">", "&gt;")
-                    .replace("\"", "&quot;")
-                    .replace("'", "&#39;");
-    }
-
-    private String filterChoice(String value, String... allowed) {
-        if (value == null) value = "";
-        for (String choice : allowed) {
-            if (choice.equals(value)) return value;
-        }
-        throw new IllegalArgumentException("Invalid filter selection. Please choose one of the listed options.");
-    }
-
-%>
 
 <html>
 <head>

@@ -1,25 +1,36 @@
 <%@ page import="java.util.List" %>
 <%@ page import="studyspotter.places.Place" %> 
 <%@ page import="studyspotter.places.PlaceDAO" %>
-<%!
-    private String escapeHtml(String value) {
-        if (value == null) return "";
-        return value.replace("&", "&amp;")
-                    .replace("<", "&lt;")
-                    .replace(">", "&gt;")
-                    .replace("\"", "&quot;")
-                    .replace("'", "&#39;");
+<%@ page import="java.sql.SQLException" %>
+<%@ page import="studyspotter.places.ClaimDAO" %>
+<%@ page import="studyspotter.places.ClaimDAO.PendingClaim" %>
+<%@ page import="studyspotter.places.ClaimDAO.ApprovedBusiness" %>
+
+<%
+    Object userIdObject = session.getAttribute("userId");
+
+    if (!(userIdObject instanceof Integer)) {
+        response.sendRedirect(request.getContextPath() + "/pages/login.jsp");
+        return;
     }
 
-    private String filterChoice(String value, String... allowed) {
-        if (value == null) value = "";
-        for (String choice : allowed) {
-            if (choice.equals(value)) return value;
-        }
-        throw new IllegalArgumentException("Invalid filter selection. Please choose one of the listed options.");
-    }
+    int ownerId = (Integer) userIdObject;
 
+    List<PendingClaim> pendingClaims;
+    List<ApprovedBusiness> approvedBusinesses;
+
+    try {
+        ClaimDAO claimDAO = new ClaimDAO();
+        pendingClaims = claimDAO.getPendingClaims(ownerId);
+        approvedBusinesses = claimDAO.getApprovedBusinesses(ownerId);
+
+    } catch (SQLException e) {
+        throw new jakarta.servlet.ServletException(
+            "Unable to load owner dashboard...", e
+        );
+    }
 %>
+
 
 <html>
 <head>
@@ -36,17 +47,14 @@
         </h1>
         <nav>
             <%
-                String loggedInEmail =
-                        (String) session.getAttribute("email");
+                String loggedInEmail = (String) session.getAttribute("email");
 
-                String role =
-                        (String) session.getAttribute("role");
+                String role = (String) session.getAttribute("role");
             %>
 
             <a href="${pageContext.request.contextPath}/pages/places/add-place.jsp">
                 Add a Spot
             </a>
-
             
                 <a href="${pageContext.request.contextPath}/">
                     Home
@@ -75,12 +83,73 @@
         </header>
         	<% if ("OWNER".equals(role)) { %>
                 
+
+        		<section class="dashboard-section">
                 
-                <h1>Your Business</h1>
-        		<p>Under Review</p>
-                
-                
-                
+                <h1>Your Business: </h1>
+			    <% if (approvedBusinesses.isEmpty()) { %>
+			        <p>You do not have any approved businesses yet.</p>
+			    <% } else { %>
+			
+			        <% for (ApprovedBusiness business : approvedBusinesses) { %>
+			            <div class="business-card">
+			                <h3><%= business.getName() %></h3>
+			                <p>
+			                    <strong>Category:</strong>
+			                    <%= business.getCategory() %>
+			                </p>
+			                <p>
+			                    <strong>Address:</strong>
+			                    <%= business.getAddress() %>
+			                </p>
+			                <p>
+			                    <strong>Rating:</strong>
+			                    <%= business.getRating() %>
+			                </p>
+			                <a href="${pageContext.request.contextPath}/pages/places/place-details.jsp?placeId=<%= business.getPlaceId() %>">
+			                    View Business
+			                </a>
+			            </div>
+			        <% } %>
+			    
+				
+				    <% } %>
+				</section>
+				<section class="dashboard-section">
+				    
+				
+				    <% if (pendingClaims.isEmpty()) { %>
+				        <p>You do not have any pending claim requests.</p>
+				    <% } else { %>
+				
+				        <% for (PendingClaim claim : pendingClaims) { %>
+				        <h2>Your Pending Businesses: </h2>
+				            <div class="business-card">
+				                <h3><%= claim.getPlaceName() %></h3>
+				                <p>
+				                    <strong>Address:</strong>
+				                    <%= claim.getAddress() %>
+				                </p>
+				
+				                <p>
+				                    <strong>Status:</strong>
+				                    <%= claim.getStatus() %>
+				                </p>
+				
+				                <p>
+				                    <strong>Submitted:</strong>
+				                    <%= claim.getCreatedAt() %>
+				                </p>
+				
+				                <p>
+				                    Your request is waiting for approval! Hang tight!
+				                </p>
+				            </div>
+				        <% } %>
+				
+				    <% } %>
+				</section>
+                <br>
                 
                 
             <% } else {%>
